@@ -1,0 +1,32 @@
+version: "3"
+services:
+  service1:
+    build: .
+    ports:
+      - 3001:3000
+    environment:
+      SELF_NAME: "service1"
+      NEXT_SERVICE: "service2:3000"
+
+  service2:
+    build: .
+    ports:
+      - 3002:3000
+    environment:
+      SELF_NAME: "service2"
+      NEXT_SERVICE: "service3:3000"
+
+  service3:
+    build: .
+    ports:
+      - 3003:3000
+    environment:
+      SELF_NAME: "service3"
+      NEXT_SERVICE: "service4:3000"
+
+  service4:
+    build: .
+    ports:
+      - 3004:3000
+    environment:
+      SELF_NAME: "service4"
