@@ -1,3 +1,16 @@
+const amqplib = require( 'amqplib' );
+
+const QUEUE = 'logs';
+
+const logOnRabbitMQ = async logPayload => {
+  const connection = await amqplib.connect('amqp://rabbitmq');
+  const channel = await connection.createChannel();
+  await channel.assertQueue( QUEUE );
+
+  const logContent = typeof logPayload == 'object' ? JSON.stringify( logPayload ) : logPayload;
+  channel.sendToQueue( QUEUE, new Buffer( logContent ) );
+};
+
 const logger = ( content, metadata = {} ) => {
   const logPayload = {
     timestamp: new Date(),
@@ -6,7 +19,7 @@ const logger = ( content, metadata = {} ) => {
   };
 
   console.debug( logPayload );
-  // TODO: send the log to RabbitMQ
+  logOnRabbitMQ( logPayload );
 };
 
 module.exports = logger;
