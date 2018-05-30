@@ -3,12 +3,15 @@ const amqplib = require( 'amqplib' );
 const QUEUE = 'logs';
 
 const logOnRabbitMQ = async logPayload => {
-  const connection = await amqplib.connect('amqp://rabbitmq');
-  const channel = await connection.createChannel();
-  await channel.assertQueue( QUEUE );
+  try {
+    const connection = await amqplib.connect('amqp://rabbitmq');
+    const channel = await connection.createChannel();
 
-  const logContent = typeof logPayload == 'object' ? JSON.stringify( logPayload ) : logPayload;
-  channel.sendToQueue( QUEUE, new Buffer( logContent ) );
+    const logContent = typeof logPayload == 'object' ? JSON.stringify( logPayload ) : logPayload;
+    channel.sendToQueue( QUEUE, new Buffer( logContent ) );
+  } catch( error ) {
+    console.error( 'Error when trying to log on RabbitMQ: ', error );
+  }
 };
 
 const logger = ( content, metadata = {} ) => {

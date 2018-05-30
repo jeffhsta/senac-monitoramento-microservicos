@@ -36,9 +36,21 @@ services:
       - 3004:3000
     environment:
       SELF_NAME: "service4"
-
     depends_on:
       - rabbitmq
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:6.2.4
+    volumes:
+      - ./logstash_config/logstash.conf/:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      - elasticsearch
+      - rabbitmq
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
+    ports:
+      - 9200:9200
 
   rabbitmq:
     image: rabbitmq:3.7
