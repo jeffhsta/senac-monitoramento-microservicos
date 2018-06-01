@@ -1,6 +1,7 @@
 const amqplib = require( 'amqplib' );
 
 const QUEUE = 'logs';
+let originalLog = () => {};
 
 const logOnRabbitMQ = async logPayload => {
   try {
@@ -10,19 +11,46 @@ const logOnRabbitMQ = async logPayload => {
     const logContent = typeof logPayload == 'object' ? JSON.stringify( logPayload ) : logPayload;
     channel.sendToQueue( QUEUE, new Buffer( logContent ) );
   } catch( error ) {
-    console.error( 'Error when trying to log on RabbitMQ: ', error );
+    //console.error( 'Error when trying to log on RabbitMQ: ', error );
   }
 };
 
-const logger = ( content, metadata = {} ) => {
-  const logPayload = {
+const logger = ( content, logMetadata ) => {
+  const metadata = Object.assign( {}, logMetadata, {
     timestamp: new Date(),
-    level: 'debug',
-    content
-  };
+    source: process.env.SELF_NAME,
+    request_id: process.env.REQUEST_ID
+  } );
 
-  console.debug( logPayload );
+  const logPayload = { metadata, content };
+
+  originalLog( logPayload );
   logOnRabbitMQ( logPayload );
 };
 
-module.exports = logger;
+const info = async ( content, metadata = {} ) => {
+  logger( content, Object.assign( {}, metadata, { level: 'INFO' }) );
+};
+
+const debug = async ( content, metadata = {} ) => {
+  logger( content, Object.assign( {}, metadata, { level: 'INFO' }) );
+};
+
+const warn = async ( content, metadata = {} ) => {
+  logger( content, Object.assign( {}, metadata, { level: 'INFO' }) );
+};
+
+const error = async ( content, metadata = {} ) => {
+  logger( content, Object.assign( {}, metadata, { level: 'INFO' }) );
+};
+
+const initialize = () => {
+  originalLog = console.log;
+  console.log = debug;
+  console.debug = debug;
+  console.info = info;
+  console.warn = warn;
+  console.error = error;
+};
+
+module.exports = { info, debug, warn, error, initialize };
