@@ -11,7 +11,7 @@ const logOnRabbitMQ = async logPayload => {
     const logContent = typeof logPayload == 'object' ? JSON.stringify( logPayload ) : logPayload;
     channel.sendToQueue( QUEUE, new Buffer( logContent ) );
   } catch( error ) {
-    //console.error( 'Error when trying to log on RabbitMQ: ', error );
+    //originalLog( 'Error when trying to log on RabbitMQ: ', error );
   }
 };
 
