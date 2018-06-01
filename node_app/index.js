@@ -19,9 +19,9 @@ const logBeginRequest = ( req, res, next ) => {
   next();
 };
 
-const sendResonse = ( req, res, bodyPayload ) => {
-  logger.debug( { req_time: process.env.REQ_TIME } );
-  logger.debug( { time_in_ms: timeDiff }, { type: "http_server" } );
+const sendResponse = ( req, res, bodyPayload ) => {
+  const timeDiff = Date.now() - process.env.REQ_TIME;
+  logger.debug( { time_in_ms: timeDiff, status_code: res.statusCode }, { type: "http_server" } );
   res.json( bodyPayload );
 };
 
@@ -37,7 +37,12 @@ app.get( '/', async ( req, res ) => {
   let bodyResponse = Object.assign( {}, reply );
   bodyResponse[selfName] = 'OK';
 
-  sendResonse( req, res, bodyResponse );
+  sendResponse( req, res, bodyResponse );
 } );
 
-app.listen(3000, () => logger.debug( 'Example app listening on port 3000!' ) );
+app.get( '/error', ( req, res ) => {
+  res.status( 500 );
+  sendResponse( req, res, { message: "Something went wrong" } );
+} );
+
+app.listen( 3000, () => logger.debug( 'Example app listening on port 3000!' ) );
