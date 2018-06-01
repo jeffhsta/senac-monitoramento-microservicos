@@ -43,6 +43,7 @@ services:
     image: docker.elastic.co/logstash/logstash:6.2.4
     volumes:
       - ./logstash_config/logstash.conf/:/usr/share/logstash/pipeline/logstash.conf
+      - ./logs/:/logs/
     depends_on:
       - elasticsearch
       - rabbitmq
