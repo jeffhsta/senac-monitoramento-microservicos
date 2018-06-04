@@ -52,3 +52,9 @@ services:
     image: grafana/grafana:5.1.3
     ports:
       - 3000:3000
+
+  log_watcher:
+    build: ./log_watcher/
+    ports:
+      - 8000:8000
+
