@@ -1,12 +1,16 @@
 const rp = require( 'request-promise' );
 const logger = require( './logger' );
 
+const randomInt = () => Math.floor( Math.random() * 10 ) % 2;
+
 const request = async nextService => {
   if ( !nextService ) { return {}; }
 
+  const endpoint = randomInt() === 0 ? '/' : '/error'
+
   const startTime = Date.now();
-  const result = rp( {
-    uri: `http://${nextService}/`,
+  const result = await rp( {
+    uri: `http://${nextService}${endpoint}`,
     headers: { 'X-Request-Id': process.env.REQUEST_ID },
     json: true
   } );
