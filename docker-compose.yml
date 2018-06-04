@@ -11,7 +11,7 @@ services:
       - rabbitmq
 
   service2:
-    build: ./node_app/
+    build: ./groovy_app/
     ports:
       - 3002:3000
     environment:
